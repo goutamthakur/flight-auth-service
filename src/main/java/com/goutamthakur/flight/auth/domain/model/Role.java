@@ -1,7 +1,9 @@
 package com.goutamthakur.flight.auth.domain.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,6 +16,8 @@ import java.time.Instant;
 @Table(name = "roles")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Role implements Serializable {
 
     @Serial
