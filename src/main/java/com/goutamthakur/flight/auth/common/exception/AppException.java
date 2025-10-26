@@ -14,7 +14,7 @@ public class AppException extends RuntimeException{
         this.errorCode = errorCode;
         this.description = description;
     }
-    // TO DO: set error code for app
+    // TODO: set error code for app
     public AppException(String message, int statusCode){
         this(message, statusCode, "ERROR", "No description provided");
     }

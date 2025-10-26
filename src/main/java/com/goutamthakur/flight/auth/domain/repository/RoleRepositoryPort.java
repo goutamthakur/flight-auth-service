@@ -1,10 +1,17 @@
 /**
- * RoleRepositoryPort is used as contract between
- * the domain and infrastructure
+ * RoleRepositoryPort is used as contract between the domain and infrastructure
+ * Methods defined here is implemented by adapters in infrastructure
  */
 
 package com.goutamthakur.flight.auth.domain.repository;
 
+import com.goutamthakur.flight.auth.domain.model.Role;
+
+import java.util.List;
+import java.util.Optional;
+
 public interface RoleRepositoryPort {
-    // TODO: Define your methods completely independent from infrastructure logic
+    List<Role> findAll();
+    Optional<Role> findById(Long id);
+    Optional<Role> findByName(String name);
 }
