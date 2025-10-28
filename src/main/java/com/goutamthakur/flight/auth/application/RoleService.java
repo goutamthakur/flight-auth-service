@@ -1,11 +1,14 @@
 package com.goutamthakur.flight.auth.application;
 
+import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.model.Role;
 import com.goutamthakur.flight.auth.domain.repository.RoleRepositoryPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,4 +19,10 @@ public class RoleService {
     public List<Role> getAllRoles(){
         return roleRepositoryPort.findAll();
     }
+
+    public Role getRoleById(Long id) {
+        return roleRepositoryPort.findById(id)
+                .orElseThrow(() -> new AppException("Role not found", 404));
+    }
+
 }

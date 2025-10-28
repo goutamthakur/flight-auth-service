@@ -5,10 +5,12 @@
 package com.goutamthakur.flight.auth.domain.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
 @Getter
+@Setter
 public class Role {
     private Long id;
     private String name;
