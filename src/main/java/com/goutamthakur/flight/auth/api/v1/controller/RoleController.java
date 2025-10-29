@@ -5,7 +5,6 @@ import com.goutamthakur.flight.auth.application.RoleService;
 import com.goutamthakur.flight.auth.common.response.ApiResponse;
 import com.goutamthakur.flight.auth.domain.model.Role;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,4 +42,6 @@ public class RoleController {
     // TODO: Write all the pending get like get by id, get by name
     // TODO: Handle exception at application service level, set error codes, write a general error response
     //       for unhandled exception in GlobalExceptionHandler
+    // TODO: AppException is causing some error solve it
+    // TODO: Why does map struct give null value configure it so that every time it must give proper result
 }

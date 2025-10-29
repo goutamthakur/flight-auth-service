@@ -22,7 +22,7 @@ public class RoleService {
 
     public Role getRoleById(Long id) {
         return roleRepositoryPort.findById(id)
-                .orElseThrow(() -> new AppException("Role not found", 404));
+                .orElseThrow(() -> new AppException("Role not found", HttpStatus.NOT_FOUND));
     }
 
 }
