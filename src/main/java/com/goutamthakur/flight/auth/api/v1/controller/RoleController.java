@@ -19,14 +19,12 @@ public class RoleController {
     private final RoleService roleService;
 
     @GetMapping()
-    public ResponseEntity<ApiResponse<List<RoleResponseDto>>> fetchAllRoles(){
-        List<RoleResponseDto> roles = roleService
-                .getAllRoles()
+    public ResponseEntity<ApiResponse<?>> fetchAllRoles(@RequestParam(value = "name", required = false) String name){
+        List<RoleResponseDto> roles = roleService.getAllRoles(name)
                 .stream()
                 .map(RoleResponseDto::from)
                 .toList();
-
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(roles));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(roleService.getAllRoles(name)));
     }
 
     @GetMapping("/{id}")
@@ -35,15 +33,4 @@ public class RoleController {
         return ResponseEntity.ok(ApiResponse.success(RoleResponseDto.from(role)));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<RoleResponseDto>> fetchRoleByName(@RequestParam("name") String name){
-        Role role = roleService.getRoleByName(name);
-        return ResponseEntity.ok(ApiResponse.success(RoleResponseDto.from(role)));
-    }
-
-    // TODO: Write all the pending get like get by id, get by name
-    // TODO: Handle exception at application service level, set error codes, write a general error response
-    //       for unhandled exception in GlobalExceptionHandler
-    // TODO: AppException is causing some error solve it
-    // TODO: Why does map struct give null value configure it so that every time it must give proper result
 }
