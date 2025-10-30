@@ -25,4 +25,9 @@ public class RoleService {
                 .orElseThrow(() -> new AppException("Role not found", HttpStatus.NOT_FOUND));
     }
 
+    public Role getRoleByName(String name){
+        return roleRepositoryPort.findByName(name)
+                .orElseThrow(() -> new AppException("Role with " + name + " does not exist", HttpStatus.NOT_FOUND));
+    }
+
 }

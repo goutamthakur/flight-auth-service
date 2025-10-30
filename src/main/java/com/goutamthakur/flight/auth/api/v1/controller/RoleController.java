@@ -7,10 +7,7 @@ import com.goutamthakur.flight.auth.domain.model.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +35,11 @@ public class RoleController {
         return ResponseEntity.ok(ApiResponse.success(RoleResponseDto.from(role)));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<RoleResponseDto>> fetchRoleByName(@RequestParam("name") String name){
+        Role role = roleService.getRoleByName(name);
+        return ResponseEntity.ok(ApiResponse.success(RoleResponseDto.from(role)));
+    }
 
     // TODO: Write all the pending get like get by id, get by name
     // TODO: Handle exception at application service level, set error codes, write a general error response
