@@ -1,35 +1,26 @@
-# Flight Auth Service
+# 🔐 Flight Auth Service
+The goal of this service is to handle user authentication and authorization using email and password, along with token management.
 
-⚠️ **Attention:** This project is currently under development and not ready for use.
 
+⚠️ **Attention:** This service is currently under development and not ready for use.
 
-## Getting Started
+## 🍃 Domain Driven Design 
+- The service follows a clean architecture inspired by the Hexagonal (Ports and Adapters) design pattern.
+- Honestly, there wasn’t a strong need to use full-blown DDD here — I just wanted to experiment with it after reading a blog post about DDD.
+- I’m not entirely sure if I’ve implemented everything perfectly, so any feedback or suggestions for improvement are very welcome.
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## 📁 Folder Structure
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.5/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.5.5/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/3.5.5/reference/web/servlet.html)
-* [Spring Security](https://docs.spring.io/spring-boot/3.5.5/reference/web/spring-security.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/3.5.5/reference/data/sql.html#data.sql.jpa-and-spring-data)
+- `api` contains the controllers and DTOs. This is the outermost layer where external clients interact with the application.
 
-### Guides
-The following guides illustrate how to use some features concretely:
+- `application` contains all the service classes. It holds the core business logic, independent of outer concerns like DTOs or inner concerns like the database or repositories.
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
-* [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
-* [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+- `domain` defines the interfaces (ports) that are implemented by the infrastructure layer.
 
-### Maven Parent overrides
+- `infrastructure` has main repository and database implementation.
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+- `common`ontains shared components such as common response models and global exception handling.
 
+## 🛠️ Setup Instructions
+
+All configurations are defined in the `application.properties` file. To override any settings, create a new profile file named `application-dev.properties` and add your datasource or any other custom configurations there.
