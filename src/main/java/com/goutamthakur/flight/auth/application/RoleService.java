@@ -1,6 +1,5 @@
 package com.goutamthakur.flight.auth.application;
 
-import com.goutamthakur.flight.auth.api.v1.dto.RoleResponseDto;
 import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.model.Role;
 import com.goutamthakur.flight.auth.domain.repository.RoleRepositoryPort;
