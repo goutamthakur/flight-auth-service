@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException e){
         String paramName = e.getName();
         String requiredParamType = e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "unknown";
-        ErrorDetail error = new ErrorDetail(HttpStatus.BAD_REQUEST.value(), "INVALID_PARAMETER", String.format("Parameter %s must is of invalid type", paramName));
+        ErrorDetail error = new ErrorDetail(HttpStatus.BAD_REQUEST.value(), ErrorCode.INVALID_PARAMETER, String.format("Parameter %s must is of invalid type", paramName));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("Invalid parameter type", error));
     }
 
@@ -32,8 +32,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleInvalidJson(HttpMessageNotReadableException e) {
         ErrorDetail error = new ErrorDetail(
                 HttpStatus.BAD_REQUEST.value(),
-                "INVALID_JSON",
-                "Request body is malformed or contains invalid data."
+                ErrorCode.INVALID_JSON,
+                ErrorCode.INVALID_JSON.getMessage()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error("Malformed JSON request", error));
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
         ErrorDetail error = new ErrorDetail(
                 HttpStatus.BAD_REQUEST.value(),
-                "VALIDATION_FAILED",
+                ErrorCode.VALIDATION_FAILED,
                 message
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -55,8 +55,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception e) {
         ErrorDetail error = new ErrorDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "INTERNAL_ERROR",
-                e.getMessage()
+                ErrorCode.INTERNAL_ERROR,
+                ErrorCode.INTERNAL_ERROR.getMessage()
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("Something went wrong", error));

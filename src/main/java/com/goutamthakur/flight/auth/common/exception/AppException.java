@@ -6,18 +6,18 @@ import org.springframework.http.HttpStatus;
 @Getter
 public class AppException extends RuntimeException{
     private final HttpStatus statusCode;
-    private final String errorCode;
+    private final ErrorCode errorCode;
     private final String description;
 
-    public AppException(String message, HttpStatus statusCode, String errorCode, String description){
+    public AppException(String message, HttpStatus statusCode, ErrorCode errorCode, String description){
         super(message);
         this.statusCode = statusCode;
         this.errorCode = errorCode;
         this.description = description;
     }
-    // TODO: set error code for app
+
     public AppException(String message, HttpStatus statusCode){
-        this(message, statusCode, "ERROR", "No description provided");
+        this(message, statusCode, ErrorCode.ERROR, ErrorCode.ERROR.getMessage());
     }
 
 }
