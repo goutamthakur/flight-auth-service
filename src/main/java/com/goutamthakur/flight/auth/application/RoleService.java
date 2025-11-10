@@ -2,7 +2,7 @@ package com.goutamthakur.flight.auth.application;
 
 import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.model.Role;
-import com.goutamthakur.flight.auth.domain.repository.RoleRepositoryPort;
+import com.goutamthakur.flight.auth.domain.port.RoleRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

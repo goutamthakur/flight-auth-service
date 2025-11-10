@@ -3,7 +3,7 @@
  * Methods defined here is implemented by adapters in infrastructure
  */
 
-package com.goutamthakur.flight.auth.domain.repository;
+package com.goutamthakur.flight.auth.domain.port;
 
 import com.goutamthakur.flight.auth.domain.model.Role;
 

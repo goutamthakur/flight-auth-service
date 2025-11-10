@@ -6,8 +6,9 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     // signup
     // Input validation if error return 400
-    // Sign up with email and password
     // Check if same email exist
+    // Sign up with email and password
+    // Generate 6 digit otp
     // Send an email for verification
 
     public String signUp(String email, String password){

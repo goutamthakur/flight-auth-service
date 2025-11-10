@@ -1,7 +1,7 @@
 package com.goutamthakur.flight.auth.infrastructure.persistence.adapter;
 
 import com.goutamthakur.flight.auth.domain.model.Role;
-import com.goutamthakur.flight.auth.domain.repository.RoleRepositoryPort;
+import com.goutamthakur.flight.auth.domain.port.RoleRepositoryPort;
 import com.goutamthakur.flight.auth.infrastructure.persistence.jpa.RoleJpaRepository;
 import com.goutamthakur.flight.auth.infrastructure.persistence.mapper.RoleMapper;
 import lombok.RequiredArgsConstructor;
