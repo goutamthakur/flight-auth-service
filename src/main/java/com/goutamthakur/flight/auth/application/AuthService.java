@@ -5,11 +5,11 @@ import com.goutamthakur.flight.auth.domain.model.User;
 import com.goutamthakur.flight.auth.domain.port.OtpStorePort;
 import com.goutamthakur.flight.auth.domain.port.UserRepositoryPort;
 import com.goutamthakur.flight.auth.domain.service.OtpCodeGenerator;
+import com.goutamthakur.flight.auth.domain.service.PasswordHasher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLOutput;
 import java.util.Optional;
 
 @Service
@@ -25,6 +25,7 @@ public class AuthService {
     private final UserRepositoryPort userRepositoryPort;
     private final OtpStorePort otpStorePort;
     private final OtpCodeGenerator otpCodeGenerator;
+    private final PasswordHasher passwordHasher;
 
 
     public String signUp(String email, String password){
@@ -32,12 +33,9 @@ public class AuthService {
         if(existingUser.isPresent()){
            throw new AppException("Email is already registered", HttpStatus.BAD_REQUEST);
         }
-//        String passwordHash =
-        // Password hashing logic pending
-        User newUser = userRepositoryPort.createUser(email, password);
-
+        String passwordHash = passwordHasher.hash(password);
+        User newUser = userRepositoryPort.createUser(email, passwordHash);
         String otp = otpCodeGenerator.generate(6);
-
 
         return "you bro" ;
     }
