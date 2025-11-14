@@ -1,7 +1,9 @@
 package com.goutamthakur.flight.auth.infrastructure.persistence.adapter;
 
+import com.goutamthakur.flight.auth.domain.enums.AuthType;
 import com.goutamthakur.flight.auth.domain.model.User;
 import com.goutamthakur.flight.auth.domain.port.UserRepositoryPort;
+import com.goutamthakur.flight.auth.infrastructure.persistence.entity.RoleEntity;
 import com.goutamthakur.flight.auth.infrastructure.persistence.entity.UserEntity;
 import com.goutamthakur.flight.auth.infrastructure.persistence.jpa.UserJpaRepository;
 import com.goutamthakur.flight.auth.infrastructure.persistence.mapper.UserMapper;
@@ -26,11 +28,16 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public User createUser(String email, String passwordHash){
+        RoleEntity role = new RoleEntity();
+        role.setId(2L);
+
         UserEntity user = userJpaRepository.save(
                 UserEntity.builder()
                         .uuid(UUID.randomUUID().toString())
+                        .roleId(role)
                         .email(email)
                         .passwordHash(passwordHash)
+                        .authType(AuthType.PASSWORD)
                         .build()
         );
         return userMapper.toDomain(user);
