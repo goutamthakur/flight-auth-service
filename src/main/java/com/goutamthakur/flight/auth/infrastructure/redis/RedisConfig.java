@@ -1,4 +1,4 @@
-package com.goutamthakur.flight.auth.infrastructure.config;
+package com.goutamthakur.flight.auth.infrastructure.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.goutamthakur.flight.auth.infrastructure.persistence.redis;
+package com.goutamthakur.flight.auth.infrastructure.redis;
 
 import com.goutamthakur.flight.auth.domain.port.OtpStorePort;
 import lombok.AllArgsConstructor;
