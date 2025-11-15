@@ -29,9 +29,9 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP verified return user data, token"));
     }
 
-    @PostMapping("/otp/send")
+    @PostMapping("/otp/resend")
     public ResponseEntity<ApiResponse<String>> resendOtp(){
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP send successfully"));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP resend successfully"));
     }
 
     @PostMapping("/login")
@@ -39,11 +39,18 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Login"));
     }
 
+    @PostMapping("/token/refresh")
+    public ResponseEntity<ApiResponse<String>> refreshToken(){
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Login"));
+    }
+
+    @PostMapping("/session/validate")
+    public ResponseEntity<ApiResponse<String>> validateUserSession(){
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Login"));
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(){
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Login"));
     }
-
-
-
 }
