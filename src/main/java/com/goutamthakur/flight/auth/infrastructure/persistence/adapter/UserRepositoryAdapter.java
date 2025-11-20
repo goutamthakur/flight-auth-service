@@ -22,7 +22,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findByEmail(String email){
-            return userJpaRepository.findByEmail(email)
+            return userJpaRepository.findByEmailIsDeletedFalse(email)
                     .map(userMapper::toDomain);
     }
 

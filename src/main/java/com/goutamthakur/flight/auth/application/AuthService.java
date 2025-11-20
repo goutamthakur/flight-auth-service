@@ -32,7 +32,7 @@ public class AuthService {
         String passwordHash = passwordHasher.hash(password);
         User newUser = userRepositoryPort.createUser(email, passwordHash);
         String otp = otpCodeGenerator.generate(6);
-        String emailOtpKey = email+":SignUpOTP";
+        String emailOtpKey = "registerOtp:"+email;
         otpStorePort.saveOtp(emailOtpKey, otp, 300);
         UserRegisteredEvent event = new UserRegisteredEvent(newUser.getEmail(), otp);
         userEventPublisherPort.publishUserRegisteredEvent(event);
@@ -40,10 +40,27 @@ public class AuthService {
         return "Successfully registered user and OTP send to email";
     }
 
-    // verify otp
-    // input validation
-    // check if email exists
-    // check if otp exists with email with purpose signup or login
-    //
+    // TODO: check if otp exists with email with purpose signup or login
+    public String verifyOtp(String email, String otp) {
+
+        User user = userRepositoryPort.findByEmail(email)
+                .orElseThrow(() -> new AppException("Email not found", HttpStatus.BAD_REQUEST));
+
+        String otpKey = "registerOtp:" + email;
+
+        String storedOtp = otpStorePort.getOtp(otpKey);
+        if (storedOtp == null) {
+            throw new AppException("Invalid OTP", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!storedOtp.equals(otp)) {
+            throw new AppException("Wrong OTP", HttpStatus.BAD_REQUEST);
+        }
+
+        otpStorePort.deleteOtp(otpKey);
+
+        // TODO: create a user session and change the response to user data with access and refresh token
+        return "Successfully OTP verified";
+    }
 
 }

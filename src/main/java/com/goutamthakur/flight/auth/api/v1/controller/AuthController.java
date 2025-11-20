@@ -26,6 +26,8 @@ public class AuthController {
 
     @PostMapping("/otp/verify")
     public ResponseEntity<ApiResponse<String>> verifyOtp(){
+        // TODO: add the dto for verify and make this verify otp to handle register, login, forget and change password
+        String result = authService.verifyOtp("", "");
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP verified return user data, token"));
     }
 

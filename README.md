@@ -1,5 +1,3 @@
-⚠️ **Attention:** This service is currently under development and not ready for use.
-
 # Flight Auth Service
 The goal of this service is to handle user authentication and authorization using email and password, along with token management.
 
