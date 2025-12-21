@@ -21,8 +21,8 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     private final UserMapper userMapper;
 
     @Override
-    public Optional<User> findByEmail(String email){
-            return userJpaRepository.findByEmailIsDeletedFalse(email)
+    public Optional<User> findByEmailAndIsDeletedFalse(String email){
+            return userJpaRepository.findByEmailAndIsDeletedFalse(email)
                     .map(userMapper::toDomain);
     }
 

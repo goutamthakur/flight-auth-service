@@ -5,6 +5,6 @@ import com.goutamthakur.flight.auth.domain.model.User;
 import java.util.Optional;
 
 public interface UserRepositoryPort {
-    Optional<User> findByEmail(String email);
+    Optional<User> findByEmailAndIsDeletedFalse(String email);
     User createUser(String email, String passwordHash);
 }

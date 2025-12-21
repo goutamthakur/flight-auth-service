@@ -31,10 +31,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class UserEntity {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -82,10 +78,10 @@ public class UserEntity {
     private AuthType authType = AuthType.PASSWORD;
 
     @Column(name = "is_active", nullable = false)
-    private boolean active = true;
+    private boolean isActive = true;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean deleted = false;
+    private boolean isDeleted = false;
 
     private Instant deletedAt;
 

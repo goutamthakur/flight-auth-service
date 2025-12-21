@@ -19,15 +19,16 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/sign-up")
+    @PostMapping("/signup")
     public ResponseEntity<ApiResponse<String>> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(authService.signUp(signUpRequest.getEmail(), signUpRequest.getPassword())));
+        String result = authService.signUp(signUpRequest.getEmail(), signUpRequest.getPassword());
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(result, null));
     }
 
     @PostMapping("/otp/verify")
     public ResponseEntity<ApiResponse<String>> verifyOtp(){
         // TODO: add the dto for verify and make this verify otp to handle register, login, forget and change password
-        String result = authService.verifyOtp("", "");
+//        String result = authService.verifyOtp("", "");
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP verified return user data, token"));
     }
 
