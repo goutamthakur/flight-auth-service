@@ -1,5 +1,6 @@
 package com.goutamthakur.flight.auth.api.v1.controller;
 
+import com.goutamthakur.flight.auth.api.v1.dto.ResendOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.SignUpRequest;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpResponseDto;
@@ -34,8 +35,9 @@ public class AuthController {
     }
 
     @PostMapping("/otp/resend")
-    public ResponseEntity<ApiResponse<String>> resendOtp(){
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP resend successfully"));
+    public ResponseEntity<ApiResponse<String>> resendOtp(@Valid @RequestBody ResendOtpRequestDto resendOtpRequest){
+        String result = authService.resendOtp(resendOtpRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(result, null));
     }
 
     @PostMapping("/login")

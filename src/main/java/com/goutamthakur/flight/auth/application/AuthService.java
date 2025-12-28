@@ -1,5 +1,6 @@
 package com.goutamthakur.flight.auth.application;
 
+import com.goutamthakur.flight.auth.api.v1.dto.ResendOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpResponseDto;
 import com.goutamthakur.flight.auth.common.exception.AppException;
@@ -70,5 +71,22 @@ public class AuthService {
                 accessToken,
                 refreshToken
         );
+    }
+
+    public String resendOtp(ResendOtpRequestDto request) {
+        User user = userRepositoryPort.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new AppException("Email not found", HttpStatus.BAD_REQUEST));
+
+        otpStorePort.deleteOtp(request.getPurpose(), user.getEmail());
+
+        String otp = otpCodeGenerator.generate(6);
+
+        otpStorePort.saveOtp(request.getPurpose(), user.getEmail(), otp, 300);
+        
+        // Send OTP to user via event currently assuming flow for signup
+        UserRegisteredEvent event = new UserRegisteredEvent(user.getEmail(), otp);
+        userEventPublisherPort.publishUserRegisteredEvent(event);
+        
+        return "OTP has been resent successfully";
     }
 }
