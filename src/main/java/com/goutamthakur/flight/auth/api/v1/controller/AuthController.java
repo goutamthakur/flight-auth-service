@@ -2,6 +2,7 @@ package com.goutamthakur.flight.auth.api.v1.controller;
 
 import com.goutamthakur.flight.auth.api.v1.dto.SignUpRequest;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
+import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpResponseDto;
 import com.goutamthakur.flight.auth.application.AuthService;
 import com.goutamthakur.flight.auth.common.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -27,9 +28,9 @@ public class AuthController {
     }
 
     @PostMapping("/otp/verify")
-    public ResponseEntity<ApiResponse<String>> verifyOtp(@Valid @RequestBody VerifyOtpRequestDto verifyOtpRequest){
-        String result = authService.verifyOtp(verifyOtpRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP verified return user data, token"));
+    public ResponseEntity<ApiResponse<VerifyOtpResponseDto>> verifyOtp(@Valid @RequestBody VerifyOtpRequestDto verifyOtpRequest){
+        VerifyOtpResponseDto result = authService.verifyOtp(verifyOtpRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP verified successfully", result));
     }
 
     @PostMapping("/otp/resend")

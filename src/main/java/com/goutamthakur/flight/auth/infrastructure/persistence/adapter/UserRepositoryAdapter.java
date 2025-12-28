@@ -1,5 +1,6 @@
 package com.goutamthakur.flight.auth.infrastructure.persistence.adapter;
 
+import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.enums.AuthType;
 import com.goutamthakur.flight.auth.domain.model.User;
 import com.goutamthakur.flight.auth.domain.port.UserRepositoryPort;
@@ -8,6 +9,7 @@ import com.goutamthakur.flight.auth.infrastructure.persistence.entity.UserEntity
 import com.goutamthakur.flight.auth.infrastructure.persistence.jpa.UserJpaRepository;
 import com.goutamthakur.flight.auth.infrastructure.persistence.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -41,5 +43,14 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                         .build()
         );
         return userMapper.toDomain(user);
+    }
+
+    @Override
+    public User updateEmailVerified(Long userId, boolean emailVerified) {
+        UserEntity userEntity = userJpaRepository.findById(userId)
+                .orElseThrow(() -> new AppException("User not found with id: " + userId, HttpStatus.NOT_FOUND));
+        userEntity.setEmailVerified(emailVerified);
+        UserEntity updatedUser = userJpaRepository.save(userEntity);
+        return userMapper.toDomain(updatedUser);
     }
 }

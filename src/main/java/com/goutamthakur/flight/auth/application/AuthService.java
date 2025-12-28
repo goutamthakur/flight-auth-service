@@ -1,6 +1,7 @@
 package com.goutamthakur.flight.auth.application;
 
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
+import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpResponseDto;
 import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.enums.OtpPurpose;
 import com.goutamthakur.flight.auth.domain.event.UserRegisteredEvent;
@@ -10,6 +11,7 @@ import com.goutamthakur.flight.auth.domain.port.UserEventPublisherPort;
 import com.goutamthakur.flight.auth.domain.port.UserRepositoryPort;
 import com.goutamthakur.flight.auth.domain.service.OtpCodeGenerator;
 import com.goutamthakur.flight.auth.domain.service.PasswordHasher;
+import com.goutamthakur.flight.auth.domain.service.TokenGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class AuthService {
     private final OtpCodeGenerator otpCodeGenerator;
     private final PasswordHasher passwordHasher;
     private final UserEventPublisherPort userEventPublisherPort;
+    private final TokenGenerator tokenGenerator;
 
     public String signUp(String email, String password){
         Optional<User> existingUser = userRepositoryPort.findByEmailAndIsDeletedFalse(email);
@@ -40,7 +43,7 @@ public class AuthService {
         return "Successfully registered user and OTP send to email";
     }
 
-    public String verifyOtp(VerifyOtpRequestDto request) {
+    public VerifyOtpResponseDto verifyOtp(VerifyOtpRequestDto request) {
         User user = userRepositoryPort.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new AppException("Email not found", HttpStatus.BAD_REQUEST));
 
@@ -52,9 +55,20 @@ public class AuthService {
             throw new AppException("Wrong OTP", HttpStatus.BAD_REQUEST);
         }
         otpStorePort.deleteOtp(request.getPurpose(), user.getEmail());
-        
 
-        // TODO: return token
-        return "Successfully OTP verified";
+        if(request.getPurpose() == OtpPurpose.SIGNUP){
+            user = userRepositoryPort.updateEmailVerified(user.getId(), true);
+        }
+
+        String accessToken = tokenGenerator.generateAccessToken(user);
+        String refreshToken = tokenGenerator.generateRefreshToken(user);
+
+        return new VerifyOtpResponseDto(
+                user.getId(),
+                user.getUuid(),
+                user.getRoleId(),
+                accessToken,
+                refreshToken
+        );
     }
 }
