@@ -23,13 +23,15 @@ public class OtpStoreAdapter implements OtpStorePort {
     };
 
     @Override
-    public String getOtp(String key){
+    public String getOtp(OtpPurpose purpose, String identifier){
+        String key = build(purpose, identifier);
         Object value = redisTemplate.opsForValue().get(key);
         return value != null ? value.toString() : null;
     };
 
     @Override
-    public void deleteOtp(String key){
+    public void deleteOtp(OtpPurpose purpose, String identifier){
+        String key = build(purpose, identifier);
         redisTemplate.delete(key);
     };
 

@@ -1,5 +1,6 @@
 package com.goutamthakur.flight.auth.application;
 
+import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
 import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.enums.OtpPurpose;
 import com.goutamthakur.flight.auth.domain.event.UserRegisteredEvent;
@@ -39,26 +40,21 @@ public class AuthService {
         return "Successfully registered user and OTP send to email";
     }
 
-    // TODO: check if otp exists with email with purpose signup or login
-//    public String verifyOtp(String email, String otp) {
-//
-//        User user = userRepositoryPort.findByEmailAndIsDeletedFalse(email)
-//                .orElseThrow(() -> new AppException("Email not found", HttpStatus.BAD_REQUEST));
-//
-//        String otpKey = "registerOtp:" + email;
-//
-//        String storedOtp = otpStorePort.getOtp(otpKey);
-//        if (storedOtp == null) {
-//            throw new AppException("Invalid OTP", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        if (!storedOtp.equals(otp)) {
-//            throw new AppException("Wrong OTP", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        otpStorePort.deleteOtp(otpKey);
-//
-//        // TODO: create a user session and change the response to user data with access and refresh token
-//        return "Successfully OTP verified";
-//    }
+    public String verifyOtp(VerifyOtpRequestDto request) {
+        User user = userRepositoryPort.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new AppException("Email not found", HttpStatus.BAD_REQUEST));
+
+        String storedOtp = otpStorePort.getOtp(request.getPurpose(), user.getEmail());
+        if (storedOtp == null) {
+            throw new AppException("Invalid OTP", HttpStatus.BAD_REQUEST);
+        }
+        if (!storedOtp.equals(request.getOtp())) {
+            throw new AppException("Wrong OTP", HttpStatus.BAD_REQUEST);
+        }
+        otpStorePort.deleteOtp(request.getPurpose(), user.getEmail());
+        
+
+        // TODO: return token
+        return "Successfully OTP verified";
+    }
 }

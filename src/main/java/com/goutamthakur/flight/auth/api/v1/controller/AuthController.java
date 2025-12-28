@@ -1,6 +1,7 @@
 package com.goutamthakur.flight.auth.api.v1.controller;
 
 import com.goutamthakur.flight.auth.api.v1.dto.SignUpRequest;
+import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
 import com.goutamthakur.flight.auth.application.AuthService;
 import com.goutamthakur.flight.auth.common.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -26,9 +27,8 @@ public class AuthController {
     }
 
     @PostMapping("/otp/verify")
-    public ResponseEntity<ApiResponse<String>> verifyOtp(){
-        // TODO: add the dto for verify and make this verify otp to handle register, login, forget and change password
-//        String result = authService.verifyOtp("", "");
+    public ResponseEntity<ApiResponse<String>> verifyOtp(@Valid @RequestBody VerifyOtpRequestDto verifyOtpRequest){
+        String result = authService.verifyOtp(verifyOtpRequest);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("OTP verified return user data, token"));
     }
 
