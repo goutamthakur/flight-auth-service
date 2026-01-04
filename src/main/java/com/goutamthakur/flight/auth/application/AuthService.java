@@ -75,8 +75,7 @@ public class AuthService {
 
         // Create user session
         String accessTokenJti = tokenGenerator.extractJti(accessToken);
-//        String refreshTokenHash = passwordHasher.hash(refreshToken);
-        String refreshTokenHash = refreshToken;
+        String refreshTokenHash = passwordHasher.hashToken(refreshToken);
         Instant refreshTokenExpiry = tokenGenerator.extractExpiry(refreshToken);
         Instant lastActiveAt = Instant.now();
 
