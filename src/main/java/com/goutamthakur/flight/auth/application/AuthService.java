@@ -1,12 +1,12 @@
 package com.goutamthakur.flight.auth.application;
 
 import com.goutamthakur.flight.auth.api.v1.dto.LoginRequestDto;
-import com.goutamthakur.flight.auth.api.v1.dto.LoginResponseDto;
 import com.goutamthakur.flight.auth.api.v1.dto.ResendOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpResponseDto;
 import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.enums.OtpPurpose;
+import com.goutamthakur.flight.auth.domain.event.UserLoginEvent;
 import com.goutamthakur.flight.auth.domain.event.UserRegisteredEvent;
 import com.goutamthakur.flight.auth.domain.model.User;
 import com.goutamthakur.flight.auth.domain.model.Session;
@@ -66,7 +66,9 @@ public class AuthService {
         }
         otpStorePort.deleteOtp(request.getPurpose(), user.getEmail());
 
-        if(request.getPurpose() == OtpPurpose.SIGNUP){
+        if(request.getPurpose() == OtpPurpose.SIGNUP ||
+                (request.getPurpose() == OtpPurpose.LOGIN && !user.isEmailVerified()))
+        {
             user = userRepositoryPort.updateEmailVerified(user.getId(), true);
         }
 
@@ -110,12 +112,15 @@ public class AuthService {
         if(request.getPurpose() == OtpPurpose.SIGNUP){
             UserRegisteredEvent event = new UserRegisteredEvent(user.getEmail(), otp);
             userEventPublisherPort.publishUserRegisteredEvent(event);
+        } else if(request.getPurpose() == OtpPurpose.LOGIN){
+            UserLoginEvent event = new UserLoginEvent(user.getEmail(), otp);
+            userEventPublisherPort.publishUserLoginEvent(event);
         }
 
         return "OTP has been resent successfully";
     }
 
-    public LoginResponseDto login(LoginRequestDto request) {
+    public String login(LoginRequestDto request) {
         User user = userRepositoryPort.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new AppException("Invalid email or password", HttpStatus.UNAUTHORIZED));
 
@@ -123,23 +128,25 @@ public class AuthService {
             throw new AppException("Account is inactive", HttpStatus.FORBIDDEN);
         }
 
-        if (!user.isEmailVerified()) {
-            throw new AppException("Email not verified. Please verify your email first", HttpStatus.FORBIDDEN);
-        }
-
         if (!hasher.compare(request.getPassword(), user.getPasswordHash())) {
             throw new AppException("Invalid email or password", HttpStatus.UNAUTHORIZED);
         }
 
-        String accessToken = tokenGenerator.generateAccessToken(user);
-        String refreshToken = tokenGenerator.generateRefreshToken(user);
+        // If email is not verified, send OTP with LOGIN purpose
+        if (!user.isEmailVerified()) {
+            otpStorePort.deleteOtp(OtpPurpose.LOGIN, user.getEmail());
+            String otp = otpCodeGenerator.generate(6);
+            otpStorePort.saveOtp(OtpPurpose.LOGIN, user.getEmail(), otp, 300);
+            UserLoginEvent event = new UserLoginEvent(user.getEmail(), otp);
+            userEventPublisherPort.publishUserLoginEvent(event);
+            return "OTP sent to email for login verification";
+        }
 
-        return new LoginResponseDto(
-                user.getId(),
-                user.getUuid(),
-                user.getRoleId(),
-                accessToken,
-                refreshToken
-        );
+        // send UserLoginEvent
+        String otp = otpCodeGenerator.generate(6);
+        UserLoginEvent loginEvent = new UserLoginEvent(user.getEmail(), otp);
+        userEventPublisherPort.publishUserLoginEvent(loginEvent);
+
+        return "OTP sent to email for login verification";
     }
 }

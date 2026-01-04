@@ -1,5 +1,6 @@
 package com.goutamthakur.flight.auth.infrastructure.rabbitmq;
 
+import com.goutamthakur.flight.auth.domain.event.UserLoginEvent;
 import com.goutamthakur.flight.auth.domain.event.UserRegisteredEvent;
 import com.goutamthakur.flight.auth.domain.port.UserEventPublisherPort;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,15 @@ public class UserEventPublisherAdapter implements UserEventPublisherPort {
         amqpTemplate.convertAndSend(
                 "",
                 RabbitMQConfig.QUEUE_USER_REGISTERED,
+                event
+        );
+    }
+
+    @Override
+    public void publishUserLoginEvent(UserLoginEvent event) {
+        amqpTemplate.convertAndSend(
+                "",
+                RabbitMQConfig.QUEUE_USER_LOGIN,
                 event
         );
     }

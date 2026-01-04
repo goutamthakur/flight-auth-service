@@ -13,10 +13,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     public static final String QUEUE_USER_REGISTERED = "user.registered";
+    public static final String QUEUE_USER_LOGIN = "user.login";
 
     @Bean
     public Queue userRegisterQueue() {
         return QueueBuilder.durable(QUEUE_USER_REGISTERED).build();
+    }
+
+    @Bean
+    public Queue userLoginQueue() {
+        return QueueBuilder.durable(QUEUE_USER_LOGIN).build();
     }
 
     @Bean

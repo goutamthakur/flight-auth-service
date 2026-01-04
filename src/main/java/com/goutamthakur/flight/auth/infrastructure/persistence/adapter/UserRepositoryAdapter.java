@@ -40,6 +40,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                         .email(email)
                         .passwordHash(passwordHash)
                         .authType(AuthType.PASSWORD)
+                        .isActive(true)
                         .build()
         );
         return userMapper.toDomain(user);
