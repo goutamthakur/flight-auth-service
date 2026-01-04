@@ -15,7 +15,7 @@ import com.goutamthakur.flight.auth.domain.port.SessionRepositoryPort;
 import com.goutamthakur.flight.auth.domain.port.UserEventPublisherPort;
 import com.goutamthakur.flight.auth.domain.port.UserRepositoryPort;
 import com.goutamthakur.flight.auth.domain.service.OtpCodeGenerator;
-import com.goutamthakur.flight.auth.domain.service.PasswordHasher;
+import com.goutamthakur.flight.auth.domain.service.Hasher;
 import com.goutamthakur.flight.auth.domain.service.TokenGenerator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class AuthService {
     private final UserRepositoryPort userRepositoryPort;
     private final OtpStorePort otpStorePort;
     private final OtpCodeGenerator otpCodeGenerator;
-    private final PasswordHasher passwordHasher;
+    private final Hasher hasher;
     private final UserEventPublisherPort userEventPublisherPort;
     private final TokenGenerator tokenGenerator;
     private final SessionRepositoryPort sessionRepositoryPort;
@@ -43,7 +43,7 @@ public class AuthService {
         if(existingUser.isPresent()){
            throw new AppException("Email is already registered", HttpStatus.BAD_REQUEST);
         }
-        String passwordHash = passwordHasher.hash(password);
+        String passwordHash = hasher.hash(password);
         User newUser = userRepositoryPort.createUser(email, passwordHash);
         String otp = otpCodeGenerator.generate(6);
         otpStorePort.saveOtp(OtpPurpose.SIGNUP, email, otp, 300);
@@ -75,7 +75,7 @@ public class AuthService {
 
         // Create user session
         String accessTokenJti = tokenGenerator.extractJti(accessToken);
-        String refreshTokenHash = passwordHasher.hashToken(refreshToken);
+        String refreshTokenHash = hasher.hashToken(refreshToken);
         Instant refreshTokenExpiry = tokenGenerator.extractExpiry(refreshToken);
         Instant lastActiveAt = Instant.now();
 
@@ -127,7 +127,7 @@ public class AuthService {
             throw new AppException("Email not verified. Please verify your email first", HttpStatus.FORBIDDEN);
         }
 
-        if (!passwordHasher.compare(request.getPassword(), user.getPasswordHash())) {
+        if (!hasher.compare(request.getPassword(), user.getPasswordHash())) {
             throw new AppException("Invalid email or password", HttpStatus.UNAUTHORIZED);
         }
 
