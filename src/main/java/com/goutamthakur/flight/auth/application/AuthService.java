@@ -1,5 +1,7 @@
 package com.goutamthakur.flight.auth.application;
 
+import com.goutamthakur.flight.auth.api.v1.dto.LoginRequestDto;
+import com.goutamthakur.flight.auth.api.v1.dto.LoginResponseDto;
 import com.goutamthakur.flight.auth.api.v1.dto.ResendOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpResponseDto;
@@ -7,16 +9,20 @@ import com.goutamthakur.flight.auth.common.exception.AppException;
 import com.goutamthakur.flight.auth.domain.enums.OtpPurpose;
 import com.goutamthakur.flight.auth.domain.event.UserRegisteredEvent;
 import com.goutamthakur.flight.auth.domain.model.User;
+import com.goutamthakur.flight.auth.domain.model.Session;
 import com.goutamthakur.flight.auth.domain.port.OtpStorePort;
+import com.goutamthakur.flight.auth.domain.port.SessionRepositoryPort;
 import com.goutamthakur.flight.auth.domain.port.UserEventPublisherPort;
 import com.goutamthakur.flight.auth.domain.port.UserRepositoryPort;
 import com.goutamthakur.flight.auth.domain.service.OtpCodeGenerator;
 import com.goutamthakur.flight.auth.domain.service.PasswordHasher;
 import com.goutamthakur.flight.auth.domain.service.TokenGenerator;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -29,7 +35,9 @@ public class AuthService {
     private final PasswordHasher passwordHasher;
     private final UserEventPublisherPort userEventPublisherPort;
     private final TokenGenerator tokenGenerator;
+    private final SessionRepositoryPort sessionRepositoryPort;
 
+    @Transactional
     public String signUp(String email, String password){
         Optional<User> existingUser = userRepositoryPort.findByEmailAndIsDeletedFalse(email);
         if(existingUser.isPresent()){
@@ -44,6 +52,7 @@ public class AuthService {
         return "Successfully registered user and OTP send to email";
     }
 
+    @Transactional
     public VerifyOtpResponseDto verifyOtp(VerifyOtpRequestDto request) {
         User user = userRepositoryPort.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new AppException("Email not found", HttpStatus.BAD_REQUEST));
@@ -64,6 +73,22 @@ public class AuthService {
         String accessToken = tokenGenerator.generateAccessToken(user);
         String refreshToken = tokenGenerator.generateRefreshToken(user);
 
+        // Create user session
+        String accessTokenJti = tokenGenerator.extractJti(accessToken);
+//        String refreshTokenHash = passwordHasher.hash(refreshToken);
+        String refreshTokenHash = refreshToken;
+        Instant refreshTokenExpiry = tokenGenerator.extractExpiry(refreshToken);
+        Instant lastActiveAt = Instant.now();
+
+        Session session = new Session();
+        session.setUserId(user.getId());
+        session.setAccessTokenJti(accessTokenJti);
+        session.setRefreshTokenHash(refreshTokenHash);
+        session.setRefreshTokenExpiry(refreshTokenExpiry);
+        session.setLastActiveAt(lastActiveAt);
+        session.setActive(true);
+        sessionRepositoryPort.createSession(session);
+
         return new VerifyOtpResponseDto(
                 user.getId(),
                 user.getUuid(),
@@ -82,11 +107,40 @@ public class AuthService {
         String otp = otpCodeGenerator.generate(6);
 
         otpStorePort.saveOtp(request.getPurpose(), user.getEmail(), otp, 300);
-        
-        // Send OTP to user via event currently assuming flow for signup
-        UserRegisteredEvent event = new UserRegisteredEvent(user.getEmail(), otp);
-        userEventPublisherPort.publishUserRegisteredEvent(event);
-        
+
+        if(request.getPurpose() == OtpPurpose.SIGNUP){
+            UserRegisteredEvent event = new UserRegisteredEvent(user.getEmail(), otp);
+            userEventPublisherPort.publishUserRegisteredEvent(event);
+        }
+
         return "OTP has been resent successfully";
+    }
+
+    public LoginResponseDto login(LoginRequestDto request) {
+        User user = userRepositoryPort.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new AppException("Invalid email or password", HttpStatus.UNAUTHORIZED));
+
+        if (!user.isActive()) {
+            throw new AppException("Account is inactive", HttpStatus.FORBIDDEN);
+        }
+
+        if (!user.isEmailVerified()) {
+            throw new AppException("Email not verified. Please verify your email first", HttpStatus.FORBIDDEN);
+        }
+
+        if (!passwordHasher.compare(request.getPassword(), user.getPasswordHash())) {
+            throw new AppException("Invalid email or password", HttpStatus.UNAUTHORIZED);
+        }
+
+        String accessToken = tokenGenerator.generateAccessToken(user);
+        String refreshToken = tokenGenerator.generateRefreshToken(user);
+
+        return new LoginResponseDto(
+                user.getId(),
+                user.getUuid(),
+                user.getRoleId(),
+                accessToken,
+                refreshToken
+        );
     }
 }

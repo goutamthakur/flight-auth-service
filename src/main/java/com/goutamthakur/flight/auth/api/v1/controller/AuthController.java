@@ -1,5 +1,7 @@
 package com.goutamthakur.flight.auth.api.v1.controller;
 
+import com.goutamthakur.flight.auth.api.v1.dto.LoginRequestDto;
+import com.goutamthakur.flight.auth.api.v1.dto.LoginResponseDto;
 import com.goutamthakur.flight.auth.api.v1.dto.ResendOtpRequestDto;
 import com.goutamthakur.flight.auth.api.v1.dto.SignUpRequest;
 import com.goutamthakur.flight.auth.api.v1.dto.VerifyOtpRequestDto;
@@ -41,8 +43,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(){
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Login"));
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto loginRequest){
+        LoginResponseDto result = authService.login(loginRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Login successful", result));
     }
 
     @PostMapping("/token/refresh")
