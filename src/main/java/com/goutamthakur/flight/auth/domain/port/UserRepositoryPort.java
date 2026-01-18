@@ -8,4 +8,5 @@ public interface UserRepositoryPort {
     Optional<User> findByEmailAndIsDeletedFalse(String email);
     User createUser(String email, String passwordHash);
     User updateEmailVerified(Long userId, boolean emailVerified);
+    User findByUuidAndIsDeletedFalse(String uuid);
 }

@@ -54,4 +54,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         UserEntity updatedUser = userJpaRepository.save(userEntity);
         return userMapper.toDomain(updatedUser);
     }
+
+    @Override
+    public User findByUuidAndIsDeletedFalse(String uuid){
+        UserEntity userEntity = userJpaRepository.findByUuidAndIsDeletedFalse(uuid)
+                .orElseThrow(() -> new AppException("User not found", HttpStatus.NOT_FOUND));
+        return userMapper.toDomain(userEntity);
+    }
 }
