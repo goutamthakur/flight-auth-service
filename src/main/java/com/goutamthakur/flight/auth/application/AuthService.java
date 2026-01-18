@@ -148,14 +148,21 @@ public class AuthService {
     return "OTP sent to email for login verification";
   }
 
+  @Transactional
   public RefreshTokenResponseDto refreshToken(RefreshTokenRequestDto request) {
     boolean validToken = tokenGenerator.validateToken(request.getRefreshToken());
     if (!validToken) {
       throw new AppException("Invalid or Expired token", HttpStatus.UNAUTHORIZED);
     }
+    String refreshTokenHash = hasher.hashToken(request.getRefreshToken());
+    sessionRepositoryPort.findByRefreshTokenHashAndIsActiveTrue(refreshTokenHash);
+
+    // Token generation
     String userUuid = tokenGenerator.extractUserUUID(request.getRefreshToken());
     User user = userRepositoryPort.findByUuidAndIsDeletedFalse(userUuid);
     String newAccessToken = tokenGenerator.generateAccessToken(user);
+    String accessTokenJti = tokenGenerator.extractJti(newAccessToken);
+    sessionRepositoryPort.updateAccessTokenJti(refreshTokenHash, accessTokenJti, Instant.now());
 
     return RefreshTokenResponseDto.builder().accessToken(newAccessToken).build();
   }

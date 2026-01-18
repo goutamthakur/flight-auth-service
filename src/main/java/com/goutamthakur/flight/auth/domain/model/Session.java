@@ -2,11 +2,13 @@ package com.goutamthakur.flight.auth.domain.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.Instant;
 
 @Getter
 @Setter
+@ToString
 public class Session {
     private Long id;
     private Long userId;

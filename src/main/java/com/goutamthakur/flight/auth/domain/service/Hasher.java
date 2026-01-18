@@ -7,5 +7,6 @@ public interface Hasher {
     Boolean compare(String rawPassword, String hashPassword);
 
     String hashToken(String token);
+
 }
 
