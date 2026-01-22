@@ -166,4 +166,15 @@ public class AuthService {
 
     return RefreshTokenResponseDto.builder().accessToken(newAccessToken).build();
   }
+
+  public String validateUserSession(ValidateSessionRequestDto request){
+      boolean validToken = tokenGenerator.validateToken(request.getRefreshToken());
+      if (!validToken) {
+          throw new AppException("Invalid or Expired token", HttpStatus.UNAUTHORIZED);
+      }
+      // TODO: invalidating the session if the session is found but token is expired
+      String refreshTokenHash = hasher.hashToken(request.getRefreshToken());
+      sessionRepositoryPort.findByRefreshTokenHashAndIsActiveTrue(refreshTokenHash);
+      return "Valid user session";
+  }
 }

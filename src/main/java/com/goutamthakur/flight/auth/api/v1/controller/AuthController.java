@@ -56,8 +56,10 @@ public class AuthController {
   }
 
   @PostMapping("/session/validate")
-  public ResponseEntity<ApiResponse<String>> validateUserSession() {
-    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Login"));
+  public ResponseEntity<ApiResponse<String>> validateSession(
+      @Valid @RequestBody ValidateSessionRequestDto requestDto) {
+    String response = authService.validateUserSession(requestDto);
+    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response, null));
   }
 
   @PostMapping("/logout")
