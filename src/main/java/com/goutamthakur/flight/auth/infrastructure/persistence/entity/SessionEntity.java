@@ -1,11 +1,10 @@
 package com.goutamthakur.flight.auth.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.Instant;
 
 @Entity
 @Table(name = "sessions",

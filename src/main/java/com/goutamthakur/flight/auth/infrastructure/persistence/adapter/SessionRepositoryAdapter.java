@@ -44,11 +44,18 @@ public class SessionRepositoryAdapter implements SessionRepositoryPort {
   }
 
   @Override
-  public void updateAccessTokenJti(String refreshTokenHash, String newAccessTokenJti, Instant lastActiveAt) {
-        int rowsAffected =
-                sessionJpaRepository.updateAccessTokenJti(refreshTokenHash, newAccessTokenJti, lastActiveAt);
-        if(rowsAffected == 0){
-            throw new AppException("Session for refresh token not found", HttpStatus.UNAUTHORIZED);
-        }
+  public void updateAccessTokenJti(
+      String refreshTokenHash, String newAccessTokenJti, Instant lastActiveAt) {
+    int rowsAffected =
+        sessionJpaRepository.updateAccessTokenJti(
+            refreshTokenHash, newAccessTokenJti, lastActiveAt);
+    if (rowsAffected == 0) {
+      throw new AppException("Session for refresh token not found", HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  @Override
+  public void markSessionInactive(String refreshTokenHash) {
+    sessionJpaRepository.markSessionInactive(refreshTokenHash);
   }
 }
