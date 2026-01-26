@@ -22,4 +22,4 @@ The goal of this service is to handle user authentication and authorization usin
 
 ## Setup Instructions
 
-All configurations are defined in the `application.properties` file. To override any settings, create a new profile file named `application-dev.properties` and add your datasource or any other custom configurations there.
+All configurations are defined in the `application.properties` file. To override any settings, create a new profile file named `application-development.properties` and add your datasource or any other custom configurations there.
